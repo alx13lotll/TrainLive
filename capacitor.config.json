@@ -1,0 +1,6 @@
+{
+  "appId": "be.trainlive.app",
+  "appName": "TrainLive",
+  "webDir": "www",
+  "plugins": { "CapacitorHttp": { "enabled": true } }
+}

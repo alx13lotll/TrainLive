@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TrainLive</title>
+<style>
+:root{color-scheme:dark;--bg:#070d1a;--glass:rgba(255,255,255,.065);--bd:rgba(255,255,255,.11);--tx:#f2f6fc;--mu:#97a8c2;--a:#4f9dff;--a2:#35e0c0;--red:#ff6b6b;--ok:#3ddc97;--pop:#101c33}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0;color:var(--tx);font:16px/1.45 system-ui,-apple-system,sans-serif;overflow-wrap:anywhere}
+body{background:radial-gradient(120% 70% at 0% -10%,#17387a 0,transparent 60%),radial-gradient(90% 55% at 100% 0,#0b5f7a66 0,transparent 60%),var(--bg);background-attachment:fixed;min-height:100vh;padding-top:env(safe-area-inset-top)}
+main{max-width:560px;margin:0 auto;padding:16px 16px calc(104px + env(safe-area-inset-bottom))}
+h1{font-size:26px;letter-spacing:-.03em;margin:4px 0 14px}h1 span{background:linear-gradient(90deg,var(--a),var(--a2));-webkit-background-clip:text;background-clip:text;color:transparent}
+label{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mu);margin:14px 0 6px}
+input,button{font:inherit;font-size:17px;border-radius:16px;border:1px solid var(--bd);background:var(--glass);color:var(--tx);padding:15px 16px;width:100%}
+input:focus{outline:2px solid var(--a);border-color:transparent}
+button{border:0;cursor:pointer;font-weight:650}
+.go{margin-top:18px;background:linear-gradient(135deg,#2f7bff,#35c5ff);box-shadow:0 10px 28px #2f7bff55}
+.ghost{background:var(--glass);border:1px solid var(--bd);margin-top:10px;font-size:15px;padding:12px;color:var(--tx)}
+.f{position:relative}
+.ac{position:absolute;left:0;right:0;top:100%;margin:6px 0 0;padding:6px;list-style:none;background:var(--pop);border:1px solid var(--a);border-radius:18px;max-height:280px;overflow-y:auto;z-index:30;display:none;box-shadow:0 16px 40px #000c}
+.ac li{padding:13px 12px;border-radius:12px;font-size:17px}.ac li:active{background:var(--a)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:4px 0;scrollbar-width:none}
+.chip{flex:none;width:auto;padding:8px 14px;border-radius:99px;font-size:14px;background:var(--glass);border:1px solid var(--bd);color:var(--tx);font-weight:500}
+.chip.warn{border-color:var(--red);color:var(--red)}
+.card{background:var(--glass);border:1px solid var(--bd);border-radius:22px;padding:16px;margin:14px 0;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.big{font-size:28px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.d{color:var(--red);font-weight:700}.ok{color:var(--ok);font-weight:600}.m{color:var(--mu);font-size:14px}
+.tag{display:inline-block;padding:3px 10px;border-radius:99px;background:rgba(79,157,255,.18);color:#a9d0ff;font-size:13px;font-weight:600;margin-right:6px}
+.leg{margin-top:12px;padding-left:14px;border-left:3px solid var(--a)}
+.xfer{margin:10px 0 0 -2px;padding:8px 12px;border-radius:12px;background:rgba(255,200,60,.12);color:#ffd36b;font-size:14px}
+.sm{width:auto;padding:8px 14px;font-size:14px;margin-top:8px;background:rgba(79,157,255,.2);color:#cfe4ff}
+.hero{height:190px;border-radius:22px;background:#0e2a4d center/cover;position:relative;overflow:hidden;margin:6px 0 14px}
+.hero>div{position:absolute;inset:auto 0 0 0;padding:44px 16px 14px;background:linear-gradient(transparent,#050a14ee)}
+.stop{display:flex;gap:14px;position:relative;padding:0 0 18px}
+.stop:before{content:"";position:absolute;left:6px;top:14px;bottom:-4px;width:2px;background:var(--bd)}
+.stop:last-child:before{display:none}
+.dot{flex:none;width:14px;height:14px;border-radius:50%;border:3px solid var(--a);background:var(--bg);margin-top:4px;z-index:1}
+.stop.past{opacity:.4}.stop.past .dot{background:var(--a)}
+.stop.here .dot{border-color:var(--a2);background:var(--a2);box-shadow:0 0 0 6px #35e0c033}
+.stop .r{margin-left:auto;text-align:right;flex:none}
+.banner{background:rgba(255,107,107,.12);border:1px solid var(--red);border-radius:16px;padding:12px;margin:12px 0;font-size:14px}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:rgba(7,13,26,.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-top:1px solid var(--bd);padding-bottom:env(safe-area-inset-bottom);z-index:40}
+nav button{background:none;border-radius:0;color:var(--mu);padding:10px 0 8px;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:3px}
+nav button.on{color:var(--a2)}
+svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+section{display:none}section.on{display:block}
+.u,.a{padding:12px 14px;border-radius:18px;margin:10px 0;white-space:pre-wrap}.u{background:#245cc4;margin-left:16%}.a{background:var(--glass);border:1px solid var(--bd);margin-right:8%}
+</style></head><body><main>
+<h1><span>TrainLive</span> SNCB</h1>
+
+<section id="s1" class="on">
+ <div id="dist"></div>
+ <div id="recent" class="chips"></div>
+ <label for="from">Départ</label>
+ <div class="f"><input id="from" placeholder="Gare de départ" autocomplete="off"><ul class="ac" id="ac-from"></ul></div>
+ <label for="to">Arrivée</label>
+ <div class="f"><input id="to" placeholder="Gare d'arrivée" autocomplete="off"><ul class="ac" id="ac-to"></ul></div>
+ <button class="ghost" id="swap">⇅ Inverser</button>
+ <label for="when">Date et heure</label><input id="when" type="datetime-local">
+ <button class="go" id="go">Chercher les trains</button>
+ <p class="m" id="st-info"></p><div id="res"></div>
+</section>
+
+<section id="s2">
+ <label for="lb">Gare</label>
+ <div class="f"><input id="lb" placeholder="Voir les prochains départs" autocomplete="off"><ul class="ac" id="ac-lb"></ul></div>
+ <div id="board"></div>
+</section>
+
+<section id="s3"><div id="track"><p class="m">Choisis un train dans Trajets ou Départs.</p></div></section>
+
+<section id="s4">
+ <label for="key">Clé API Anthropic (reste sur ce téléphone)</label>
+ <input id="key" type="password" placeholder="sk-ant-...">
+ <div id="chat"><p class="m">Pose une question sur tes trajets, retards ou correspondances.</p></div>
+ <input id="q" placeholder="Ex : quel train prendre demain matin ?">
+ <button class="go" id="ask">Demander</button>
+</section>
+</main>
+<nav>
+ <button class="on" data-s="s1"><svg viewBox="0 0 24 24"><path d="M5 19a2 2 0 100-4 2 2 0 000 4zM19 9a2 2 0 100-4 2 2 0 000 4zM7 17h6a3 3 0 000-6h-2a3 3 0 010-6h6"/></svg>Trajets</button>
+ <button data-s="s2"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Départs</button>
+ <button data-s="s3"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="14" rx="3"/><path d="M5 11h14M8 21l2-4M16 21l-2-4"/></svg>Suivi</button>
+ <button data-s="s4"><svg viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>IA</button>
+</nav>
+
+<script>
+const API='https://api.irail.be',H={'User-Agent':'TrainLive/2.0 (github.com/alx13lotll/trainlive)',Accept:'application/json'};
+const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const hm=t=>new Date(t*1000).toLocaleTimeString('fr-BE',{hour:'2-digit',minute:'2-digit'});
+const dl=s=>s>0?`<span class="d">+${Math.round(s/60)} min</span>`:'<span class="ok">à l\'heure</span>';
+const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[-'\/]/g,' ').replace(/\s+/g,' ').trim();
+const store=(k,v)=>{try{return v===undefined?localStorage.getItem(k):localStorage.setItem(k,v)}catch(e){return null}};
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const J=async r=>typeof r.json==='function'?r.json():r.data;
+let stations=[],last=[],tracked=null,seg={},timer=null,prev={},busy=false,lastHtml='';
+
+async function api(p,q,tries=3){
+  const u=new URL(API+p);
+  Object.entries({format:'json',lang:'fr',...q}).forEach(([k,v])=>u.searchParams.set(k,v));
+  let err;
+  for(let i=0;i<tries;i++){
+    try{const r=await fetch(u.toString(),{headers:H});if(r.ok){const d=await J(r);if(d)return d}err=new Error('iRail '+r.status)}catch(e){err=e}
+    if(i<tries-1)await sleep(800*(i+1));
+  }
+  throw err;
+}
+$$('nav button').forEach(b=>b.onclick=()=>go(b.dataset.s));
+function go(id){$$('nav button,section').forEach(e=>e.classList.remove('on'));document.querySelector(`[data-s=${id}]`).classList.add('on');$('#'+id).classList.add('on');window.scrollTo(0,0)}
+const now=new Date();now.setMinutes(now.getMinutes()-now.getTimezoneOffset());$('#when').value=now.toISOString().slice(0,16);
+$('#key').value=store('key')||'';
+
+/* gares */
+function setStations(l){stations=l.map(s=>({id:s.id,name:s.name,n:norm(s.name)}))}
+(async()=>{
+  try{const c=JSON.parse(store('stations')||'null');if(c?.length)setStations(c)}catch(e){}
+  try{const d=await api('/stations/',{});const l=d.station.map(s=>({id:s.id,name:s.name}));store('stations',JSON.stringify(l));setStations(l)}
+  catch(e){if(!stations.length)$('#st-info').innerHTML='<span class="d">Gares non chargées : vérifie ta connexion.</span>'}
+})();
+function search(q){
+  q=norm(q);if(!q)return[];
+  const a=stations.filter(s=>s.n.startsWith(q)),b=stations.filter(s=>!a.includes(s)&&s.n.split(' ').some(w=>w.startsWith(q))),c=stations.filter(s=>!a.includes(s)&&!b.includes(s)&&s.n.includes(q));
+  return[...a,...b,...c].slice(0,7);
+}
+function attach(inp,ul,onPick){
+  const show=()=>{const r=search(inp.value);ul.innerHTML=r.map(s=>`<li data-id="${esc(s.id)}" data-n="${esc(s.name)}">${esc(s.name)}</li>`).join('');ul.style.display=r.length?'block':'none'};
+  inp.addEventListener('input',()=>{inp.dataset.id='';show()});
+  inp.addEventListener('blur',()=>setTimeout(()=>ul.style.display='none',200));
+  ul.addEventListener('pointerdown',e=>{const li=e.target.closest('li');if(!li)return;e.preventDefault();inp.value=li.dataset.n;inp.dataset.id=li.dataset.id;ul.style.display='none';inp.blur();onPick&&onPick(li.dataset.id)});
+}
+attach($('#from'),$('#ac-from'));attach($('#to'),$('#ac-to'));attach($('#lb'),$('#ac-lb'),showBoard);
+$('#swap').onclick=()=>{const a=$('#from'),b=$('#to');[a.value,b.value]=[b.value,a.value];[a.dataset.id,b.dataset.id]=[b.dataset.id||'',a.dataset.id||'']};
+function resolve(i){if(i.dataset.id)return i.dataset.id;const q=norm(i.value),r=stations.find(s=>s.n===q)||search(i.value)[0];if(r){i.value=r.name;i.dataset.id=r.id;return r.id}return i.value.trim()}
+
+/* perturbations + récents */
+(async()=>{try{
+  const d=await api('/disturbances/',{},2),l=(d.disturbance||[]).slice(0,4);
+  if(l.length){$('#dist').innerHTML=`<button class="chip warn" id="dbtn">⚠ ${l.length} perturbation${l.length>1?'s':''} en cours</button><div id="dlist" style="display:none">${l.map(x=>`<div class="banner"><b>${esc(x.title)}</b></div>`).join('')}</div>`;$('#dbtn').onclick=()=>{const e=$('#dlist');e.style.display=e.style.display==='none'?'block':'none'}}
+}catch(e){}})();
+function recents(){let r=[];try{r=JSON.parse(store('recent')||'[]')}catch(e){}
+  $('#recent').innerHTML=r.map((x,i)=>`<button class="chip" data-r="${i}">${esc(x[0])} → ${esc(x[1])}</button>`).join('');
+  $$('[data-r]').forEach(b=>b.onclick=()=>{const x=r[b.dataset.r];$('#from').value=x[0];$('#from').dataset.id=x[2];$('#to').value=x[1];$('#to').dataset.id=x[3];$('#go').click()})}
+recents();
+
+/* trajets */
+function legsOf(c){
+  const v=c.vias?.via||[],P=[{t:c.departure,s:c.departure.stationinfo},...v.map(x=>({t:x.departure,a:x.arrival,s:x.stationinfo})),{a:c.arrival,s:c.arrival.stationinfo}],L=[];
+  for(let k=0;k<P.length-1;k++){const A=P[k],B=P[k+1];
+    L.push({vehicle:A.t.vehicle,short:A.t.vehicleinfo?.shortname||'',t0:A.t.time,d0:+A.t.delay,pl:A.t.platform,c0:A.t.canceled=='1',from:A.s,t1:B.a.time,d1:+B.a.delay,to:B.s,wait:k<v.length?Math.round((v[k].timeBetween||0)/60):0})}
+  return L;
+}
+$('#go').onclick=async()=>{
+  const w=$('#when').value;
+  if(!$('#from').value.trim()||!$('#to').value.trim()||!w){$('#res').innerHTML='<div class="banner">Remplis départ, arrivée et heure.</div>';return}
+  const from=resolve($('#from')),to=resolve($('#to')),[dt,tm]=w.split('T'),[y,mo,da]=dt.split('-');
+  $('#res').innerHTML='<p class="m">Recherche…</p>';
+  try{
+    const d=await api('/connections/',{from,to,date:da+mo+y.slice(2),time:tm.replace(':',''),timesel:'departure'});
+    last=d.connection||[];
+    let r=[];try{r=JSON.parse(store('recent')||'[]')}catch(e){}
+    r=[[$('#from').value,$('#to').value,from,to],...r.filter(x=>x[2]!==from||x[3]!==to)].slice(0,5);store('recent',JSON.stringify(r));recents();
+    $('#res').innerHTML=last.map((c,i)=>{
+      const L=legsOf(c),n=L.length-1;
+      return `<div class="card"><div class="row"><span class="big">${hm(c.departure.time)} → ${hm(c.arrival.time)}</span><span class="m">${Math.round(c.duration/60)} min</span></div>
+      <div class="m">${n?n+' correspondance'+(n>1?'s':''):'Direct'}</div>`+
+      L.map((l,k)=>`${k?`<div class="xfer">⏱ Correspondance de ${l.wait} min à ${esc(L[k-1].to?.name||'')}</div>`:''}
+        <div class="leg"><div class="row"><span><b>${hm(l.t0)}</b> ${esc(l.from?.name||'')}</span><span>${l.c0?'<span class="d">SUPPRIMÉ</span>':dl(l.d0)}</span></div>
+        <div class="m"><span class="tag">${esc(l.short)}</span>quai ${esc(l.pl)} · arrivée ${hm(l.t1)} à ${esc(l.to?.name||'')}</div>
+        <button class="sm" data-i="${i}" data-k="${k}">Suivre ce train</button></div>`).join('')+`</div>`}).join('')||'<p class="m">Aucun train trouvé.</p>';
+    $$('[data-i]').forEach(b=>b.onclick=()=>{const l=legsOf(last[b.dataset.i])[b.dataset.k];follow(l.vehicle,l.from?.id,l.to?.id)});
+  }catch(e){$('#res').innerHTML='<div class="banner">Recherche impossible ('+esc(e.message)+'). Réessaie.</div>'}
+};
+
+/* départs d'une gare */
+async function showBoard(id){
+  $('#board').innerHTML='<p class="m">Chargement…</p>';
+  try{
+    const d=await api('/liveboard/',{id,arrdep:'departure'}),l=d.departures?.departure||[];
+    $('#board').innerHTML=l.slice(0,15).map((x,i)=>`<div class="card" data-b="${i}" style="cursor:pointer"><div class="row"><span class="big">${hm(x.time)}</span>${x.canceled=='1'?'<span class="d">SUPPRIMÉ</span>':dl(+x.delay)}</div>
+      <div><b>${esc(x.station)}</b></div><div class="m"><span class="tag">${esc(x.vehicleinfo?.shortname||'')}</span>quai ${esc(x.platform)}</div></div>`).join('')||'<p class="m">Aucun départ.</p>';
+    $$('[data-b]').forEach(b=>b.onclick=()=>follow(l[b.dataset.b].vehicle,id,null));
+  }catch(e){$('#board').innerHTML='<div class="banner">Départs indisponibles ('+esc(e.message)+').</div>'}
+}
+
+/* photo du train (Wikipédia) + composition (iRail) */
+async function typeOf(id){try{const d=await api('/composition/',{id,data:'all'},1),m=JSON.stringify(d).match(/"parent_type":"(\w+)","sub_type":"(\w+)"/);return m?m[1]+m[2]:''}catch(e){return''}}
+async function photo(q){
+  const k='ph:'+q,c=store(k);if(c)return c==='-'?'':c;
+  try{const r=await fetch('https://fr.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch='+encodeURIComponent(q)+'&gsrlimit=4&prop=pageimages&piprop=thumbnail&pithumbsize=900&format=json&origin=*'),d=await J(r);
+    const p=Object.values(d.query?.pages||{}).sort((a,b)=>a.index-b.index).find(p=>p.thumbnail),u=p?.thumbnail.source||'';store(k,u||'-');return u}catch(e){return''}
+}
+async function loadHero(id){
+  const t=await typeOf(id),u=await photo(t?'SNCB '+t:'Train SNCB Belgique')||await photo('Train SNCB Belgique');
+  const h=$('#hero');if(!h||tracked!==id)return;
+  if(u)h.style.backgroundImage=`url("${u}")`;
+  const l=$('#htype');if(l)l.textContent=t?'Matériel : '+t:'Matériel non communiqué';
+}
+
+/* suivi */
+async function notify(title,body){const LN=window.Capacitor?.Plugins?.LocalNotifications;if(LN){try{await LN.schedule({notifications:[{id:Date.now()%2147483647,title,body}]})}catch(e){}}}
+async function follow(id,from,to){
+  tracked=id;seg={from,to};prev={};lastHtml='';clearInterval(timer);go('s3');
+  $('#track').innerHTML='<p class="m">Chargement du train…</p>';
+  const LN=window.Capacitor?.Plugins?.LocalNotifications;if(LN){try{await LN.requestPermissions()}catch(e){}}
+  refresh();timer=setInterval(refresh,30000);
+}
+async function refresh(){
+  if(busy||!tracked)return;busy=true;const id=tracked;
+  try{
+    const d=await api('/vehicle/',{id});let stops=d.stops?.stop;
+    if(!stops?.length)throw new Error('pas encore de données');
+    const i=stops.findIndex(s=>s.stationinfo?.id===seg.from),j=stops.findIndex(s=>s.stationinfo?.id===seg.to);
+    if(i>=0)stops=stops.slice(i,j>i?j+1:undefined);else if(j>=0)stops=stops.slice(0,j+1);
+    let h=false;const first=!$('#hero');
+    lastHtml=`<div class="hero" id="hero"><div><div class="big">${esc(d.vehicleinfo?.shortname||id)}</div><div class="m">Vers ${esc(d.vehicleinfo?.direction?.name||'')} · <span id="htype"></span></div></div></div>`+
+      `<div class="card">`+stops.map(s=>{const past=s.left=='1',here=!past&&!h&&(h=true);
+        return `<div class="stop ${past?'past':''} ${here?'here':''}"><span class="dot"></span><div>${esc(s.station)}<div class="m">quai ${esc(s.platform)}${here?' · prochain arrêt':''}</div></div>
+        <div class="r"><b>${hm(s.time)}</b><div>${s.canceled=='1'?'<span class="d">supprimé</span>':dl(+s.delay)}</div></div></div>`}).join('')+`</div><p class="m">Mis à jour à ${new Date().toLocaleTimeString('fr-BE')}</p>`;
+    const keep=$('#hero')?.style.backgroundImage;
+    $('#track').innerHTML=lastHtml;
+    if(keep&&$('#hero')){$('#hero').style.backgroundImage=keep}else loadHero(id);
+    stops.forEach(s=>{const p=prev[s.station],cur=[s.delay,s.platform,s.canceled].join('|');
+      if(p&&p!==cur){const[pd,pp]=p.split('|');
+        if(s.canceled=='1')notify('Arrêt supprimé',s.station);
+        else if(pp!==s.platform)notify('Changement de quai',`${s.station} : quai ${s.platform}`);
+        else if(Math.abs(s.delay-pd)>=60)notify('Retard mis à jour',`${s.station} : ${Math.round(s.delay/60)} min`)}
+      prev[s.station]=cur});
+  }catch(e){$('#track').innerHTML=`<div class="banner">Connexion instable (${esc(e.message)}). Nouvel essai dans 30 s.</div>`+lastHtml}
+  finally{busy=false}
+}
+
+/* IA */
+async function ask(){
+  const key=$('#key').value.trim(),q=$('#q').value.trim(),chat=$('#chat');
+  if(!key){chat.innerHTML+='<div class="banner">Colle d\'abord ta clé API.</div>';return}
+  if(!q)return;store('key',key);chat.innerHTML+=`<div class="u">${esc(q)}</div>`;$('#q').value='';
+  const w=document.createElement('div');w.className='a m';w.textContent='…';chat.appendChild(w);
+  const ctx=last.slice(0,5).map(c=>legsOf(c).map(l=>({train:l.short,depart:hm(l.t0),de:l.from?.name,arrivee:hm(l.t1),a:l.to?.name,retard_min:l.d0/60,quai:l.pl})));
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:600,system:'Tu es l\'assistant d\'une appli de trains SNCB (Belgique). Réponds en français, court et clair. Maintenant : '+new Date().toLocaleString('fr-BE')+'. Derniers trajets cherchés : '+JSON.stringify(ctx)+'. Train suivi : '+(tracked||'aucun')+'. Si tu ne sais pas, dis-le.',messages:[{role:'user',content:q}]})});
+    const d=await J(r);w.className='a';w.textContent=d?.content?.[0]?.text||('Erreur : '+(d?.error?.message||r.status));
+  }catch(e){w.className='a d';w.textContent='Erreur réseau.'}
+}
+$('#ask').onclick=ask;$('#q').addEventListener('keydown',e=>{if(e.key==='Enter')ask()});
+</script></body></html>
